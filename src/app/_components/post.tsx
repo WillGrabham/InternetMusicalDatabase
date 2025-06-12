@@ -1,9 +1,15 @@
 "use client";
 
 import { useState } from "react";
-
 import { api } from "~/trpc/react";
-import styles from "../index.module.css";
+import {
+  Form,
+  Input,
+  Button,
+  SpaceBetween,
+  Container,
+  Box,
+} from "@cloudscape-design/components";
 
 export function LatestPost() {
   const [latestPost] = api.post.getLatest.useSuspenseQuery();
@@ -18,37 +24,35 @@ export function LatestPost() {
   });
 
   return (
-    <div className={styles.showcaseContainer}>
-      {latestPost ? (
-        <p className={styles.showcaseText}>
-          Your most recent post: {latestPost.name}
-        </p>
-      ) : (
-        <p className={styles.showcaseText}>You have no posts yet.</p>
-      )}
+    <Container>
+      <SpaceBetween size="m">
+        <Box variant="p">
+          {latestPost ? (
+            <>Your most recent post: {latestPost.name}</>
+          ) : (
+            <>You have no posts yet.</>
+          )}
+        </Box>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          createPost.mutate({ name });
-        }}
-        className={styles.form}
-      >
-        <input
-          type="text"
-          placeholder="Title"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className={styles.input}
-        />
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={createPost.isPending}
+        <Form
+          actions={
+            <Button
+              variant="primary"
+              formAction="submit"
+              disabled={createPost.isPending}
+              onClick={() => createPost.mutate({ name })}
+            >
+              {createPost.isPending ? "Submitting..." : "Submit"}
+            </Button>
+          }
         >
-          {createPost.isPending ? "Submitting..." : "Submit"}
-        </button>
-      </form>
-    </div>
+          <Input
+            value={name}
+            onChange={({ detail }: { detail: { value: string } }) => setName(detail.value)}
+            placeholder="Title"
+          />
+        </Form>
+      </SpaceBetween>
+    </Container>
   );
 }
