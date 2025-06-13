@@ -35,7 +35,7 @@ export function PageContent({ session }: PageContentProps) {
 
           {session && (
             <Alert>
-              Welcome back, <Box color="text-label">{session?.user?.name}</Box>!
+              Welcome back, {session?.user?.name}!
             </Alert>
           )}
         </SpaceBetween>
