@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import {
   Container,
   Header,
@@ -14,14 +15,12 @@ import {
   Alert,
 } from "@cloudscape-design/components";
 
-export function SignupForm() {
+export function SigninForm() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async () => {
     setError("");
@@ -34,37 +33,20 @@ export function SignupForm() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const result = await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json() as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Failed to sign up");
+      if (result?.error) {
+        throw new Error("Invalid username or password");
       }
 
-      // Success
-      setSuccess(true);
-      setUsername("");
-      setPassword("");
-      setConfirmPassword("");
-
-      // Redirect to login after a short delay
-      setTimeout(() => {
-        router.push("/signin");
-      }, 2000);
+      // Success - redirect to home page
+      router.push("/");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -75,8 +57,8 @@ export function SignupForm() {
   return (
     <ContentLayout
       header={
-        <Header variant="h1" description="Create a new account">
-          Sign Up
+        <Header variant="h1" description="Sign in to your account">
+          Sign In
         </Header>
       }
     >
@@ -86,16 +68,16 @@ export function SignupForm() {
             <SpaceBetween direction="horizontal" size="xs">
               <Button
                 variant="link"
-                onClick={() => router.push("/signin")}
+                onClick={() => router.push("/signup")}
               >
-                Already have an account? Sign in
+                Don&apos;t have an account? Sign up
               </Button>
               <Button
                 variant="primary"
                 onClick={() => void handleSubmit()}
                 loading={loading}
               >
-                Sign Up
+                Sign In
               </Button>
             </SpaceBetween>
           }
@@ -103,12 +85,6 @@ export function SignupForm() {
           {error && (
             <Alert type="error" dismissible onDismiss={() => setError("")}>
               {error}
-            </Alert>
-          )}
-
-          {success && (
-            <Alert type="success" dismissible onDismiss={() => setSuccess(false)}>
-              Account created successfully! Redirecting to login...
             </Alert>
           )}
 
@@ -127,16 +103,6 @@ export function SignupForm() {
               onChange={({ detail }) => setPassword(detail.value)}
               type="password"
               controlId="password"
-              disabled={loading}
-            />
-          </FormField>
-
-          <FormField label="Confirm Password" controlId="confirmPassword">
-            <Input
-              value={confirmPassword}
-              onChange={({ detail }) => setConfirmPassword(detail.value)}
-              type="password"
-              controlId="confirmPassword"
               disabled={loading}
             />
           </FormField>

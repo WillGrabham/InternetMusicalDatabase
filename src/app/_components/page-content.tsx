@@ -30,7 +30,7 @@ export function PageContent({ session }: PageContentProps) {
                     Sign up
                   </Button>
                 )}
-                <Button variant="primary" href={session ? "/api/auth/signout" : "/api/auth/signin"}>
+                <Button variant="primary" href={session ? "/signout" : "/signin"}>
                   {session ? "Sign out" : "Sign in"}
                 </Button>
               </SpaceBetween>
