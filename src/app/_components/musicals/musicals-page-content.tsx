@@ -19,6 +19,7 @@ export function MusicalsPageContent({
   session,
 }: MusicalsPageContentProps = {}) {
   const router = useRouter();
+  const isAdmin = session?.user?.role === "ADMIN";
   return (
     <ContentLayout
       header={
@@ -27,9 +28,22 @@ export function MusicalsPageContent({
             variant="h1"
             description="Browse our collection of musicals"
             actions={
-              <Button onClick={() => router.push("/")} variant="primary">
-                Back to home
-              </Button>
+              <SpaceBetween direction="horizontal" size="xs">
+                {isAdmin && (
+                  <Button
+                    onClick={() => router.push("/musicals/create")}
+                    variant="primary"
+                  >
+                    Create Musical
+                  </Button>
+                )}
+                <Button
+                  onClick={() => router.push("/")}
+                  variant={isAdmin ? "normal" : "primary"}
+                >
+                  Back to home
+                </Button>
+              </SpaceBetween>
             }
           >
             Musicals

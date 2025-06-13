@@ -12,6 +12,7 @@ import {
 } from "@cloudscape-design/components";
 import type { Musical } from "@prisma/client";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface MusicalDetailsContentProps {
   musical: Musical;
@@ -24,6 +25,7 @@ export function MusicalDetailsContent({
   isUnreleased,
   isAdmin,
 }: MusicalDetailsContentProps) {
+  const router = useRouter();
   const releaseDate = new Date(musical.releaseDate).toLocaleDateString();
 
   return (
@@ -34,9 +36,22 @@ export function MusicalDetailsContent({
             variant="h1"
             description={`Released: ${releaseDate}`}
             actions={
-              <Button variant="primary" href="/musicals">
-                Back to Musicals
-              </Button>
+              <SpaceBetween direction="horizontal" size="xs">
+                {isAdmin && (
+                  <Button
+                    variant="primary"
+                    onClick={() => router.push(`/musicals/${musical.id}/edit`)}
+                  >
+                    Edit Musical
+                  </Button>
+                )}
+                <Button
+                  variant={isAdmin ? "normal" : "primary"}
+                  href="/musicals"
+                >
+                  Back to Musicals
+                </Button>
+              </SpaceBetween>
             }
           >
             {musical.title}
