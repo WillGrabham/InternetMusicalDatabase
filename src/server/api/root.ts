@@ -1,5 +1,6 @@
 import { createCallerFactory, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import { musicalRouter } from "./routers/musical";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
+  musical: musicalRouter,
 });
 
 // export type definition of API
