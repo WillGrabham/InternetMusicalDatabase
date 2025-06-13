@@ -8,7 +8,7 @@ import {
   ContentLayout,
   Alert,
 } from "@cloudscape-design/components";
-import { LatestPost } from "./post";
+import { HomeMusicalList } from "./musicals/home-musical-list";
 import type { Session } from "next-auth";
 
 interface PageContentProps {
@@ -48,7 +48,7 @@ export function PageContent({ session }: PageContentProps) {
       }
     >
       <Container>
-        {session?.user && <LatestPost />}
+        <HomeMusicalList session={session} />
       </Container>
     </ContentLayout>
   );
