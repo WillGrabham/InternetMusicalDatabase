@@ -14,18 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -56,13 +44,24 @@ model Session {
 
 model User {
     id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
+    username      String    @unique
+    password      String
+    role          String    @default("USER")
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+}
+
+model Film {
+    id          String   @id @default(cuid())
+    title       String
+    description String
+    posterUrl   String
+    releaseDate DateTime
+    createdBy   String   // Stores the user ID who created it
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([releaseDate])
 }
 
 model VerificationToken {
