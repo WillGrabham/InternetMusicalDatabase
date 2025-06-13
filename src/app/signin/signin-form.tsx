@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import {
-  Container,
-  Header,
-  SpaceBetween,
+  Alert,
   Button,
+  Container,
+  ContentLayout,
   Form,
   FormField,
+  Header,
   Input,
-  ContentLayout,
-  Alert,
+  SpaceBetween,
 } from "@cloudscape-design/components";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function SigninForm() {
   const router = useRouter();
@@ -66,10 +66,7 @@ export function SigninForm() {
         <Form
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button
-                variant="link"
-                onClick={() => router.push("/signup")}
-              >
+              <Button variant="link" onClick={() => router.push("/signup")}>
                 Don&apos;t have an account? Sign up
               </Button>
               <Button

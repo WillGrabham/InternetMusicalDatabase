@@ -1,15 +1,15 @@
 "use client";
 
 import {
+  Alert,
+  Button,
   Container,
+  ContentLayout,
   Header,
   SpaceBetween,
-  Button,
-  ContentLayout,
-  Alert,
 } from "@cloudscape-design/components";
-import { HomeMusicalList } from "./musicals/home-musical-list";
 import type { Session } from "next-auth";
+import { HomeMusicalList } from "./musicals/home-musical-list";
 
 interface PageContentProps {
   session: Session | null;
@@ -30,7 +30,10 @@ export function PageContent({ session }: PageContentProps) {
                     Sign up
                   </Button>
                 )}
-                <Button variant="primary" href={session ? "/signout" : "/signin"}>
+                <Button
+                  variant="primary"
+                  href={session ? "/signout" : "/signin"}
+                >
                   {session ? "Sign out" : "Sign in"}
                 </Button>
               </SpaceBetween>
@@ -39,11 +42,7 @@ export function PageContent({ session }: PageContentProps) {
             Musical Database
           </Header>
 
-          {session && (
-            <Alert>
-              Welcome back, {session?.user?.name}!
-            </Alert>
-          )}
+          {session && <Alert>Welcome back, {session?.user?.name}!</Alert>}
         </SpaceBetween>
       }
     >

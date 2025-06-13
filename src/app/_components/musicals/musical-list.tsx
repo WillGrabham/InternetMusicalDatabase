@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import type { Session } from "next-auth";
 import {
   Box,
   Container,
@@ -10,8 +8,10 @@ import {
   SpaceBetween,
   TextFilter,
 } from "@cloudscape-design/components";
-import { MusicalCards } from "./musical-cards";
+import type { Session } from "next-auth";
+import { useState } from "react";
 import { api } from "~/trpc/react";
+import { MusicalCards } from "./musical-cards";
 
 interface MusicalListProps {
   session?: Session | null;
@@ -24,7 +24,6 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   const [cursor, setCursor] = useState<string | null>(null);
   const itemsPerPage = 10;
 
-
   // Fetch musicals with pagination
   const { data, isLoading, error } = api.musical.getMusicals.useQuery({
     limit: itemsPerPage,
@@ -33,13 +32,17 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   });
 
   // Filter musicals based on search text
-  const filteredMusicals = data?.musicals.filter((musical) =>
-    musical.title.toLowerCase().includes(filterText.toLowerCase()) ||
-    musical.description.toLowerCase().includes(filterText.toLowerCase())
-  ) ?? [];
+  const filteredMusicals =
+    data?.musicals.filter(
+      (musical) =>
+        musical.title.toLowerCase().includes(filterText.toLowerCase()) ||
+        musical.description.toLowerCase().includes(filterText.toLowerCase()),
+    ) ?? [];
 
   // Handle pagination
-  const handlePaginationChange = (event: { detail: { currentPageIndex: number } }) => {
+  const handlePaginationChange = (event: {
+    detail: { currentPageIndex: number };
+  }) => {
     setCurrentPage(event.detail.currentPageIndex);
 
     // If going to next page and we have a nextCursor, use it
@@ -67,7 +70,9 @@ export function MusicalList({ session }: MusicalListProps = {}) {
         {isLoading ? (
           <Box>Loading musicals...</Box>
         ) : error ? (
-          <Box color="text-status-error">Error loading musicals: {error.message}</Box>
+          <Box color="text-status-error">
+            Error loading musicals: {error.message}
+          </Box>
         ) : filteredMusicals.length === 0 ? (
           <Box textAlign="center">
             <b>No musicals found</b>

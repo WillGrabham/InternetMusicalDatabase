@@ -1,16 +1,16 @@
 "use client";
 
-import type { Session } from "next-auth";
 import {
   Box,
+  Button,
   Container,
   Header,
   SpaceBetween,
-  Button,
 } from "@cloudscape-design/components";
-import { MusicalCards } from "./musical-cards";
-import { api } from "~/trpc/react";
+import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { api } from "~/trpc/react";
+import { MusicalCards } from "./musical-cards";
 
 interface HomeMusicalListProps {
   session: Session | null;
@@ -33,7 +33,7 @@ export function HomeMusicalList({ session }: HomeMusicalListProps) {
         <Header
           variant="h2"
           actions={
-            <Button onClick={() => router.push('/musicals')} variant="primary">
+            <Button onClick={() => router.push("/musicals")} variant="primary">
               View All
             </Button>
           }
@@ -44,7 +44,9 @@ export function HomeMusicalList({ session }: HomeMusicalListProps) {
         {isLoading ? (
           <Box>Loading musicals...</Box>
         ) : error ? (
-          <Box color="text-status-error">Error loading musicals: {error.message}</Box>
+          <Box color="text-status-error">
+            Error loading musicals: {error.message}
+          </Box>
         ) : musicals.length === 0 ? (
           <Box textAlign="center">
             <b>No musicals found</b>

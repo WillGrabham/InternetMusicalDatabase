@@ -1,22 +1,24 @@
 "use client";
 
-import { Suspense } from "react";
-import type { Session } from "next-auth";
-import { MusicalList } from "./musical-list";
 import {
-  ContentLayout,
+  Button,
   Container,
+  ContentLayout,
   Header,
   SpaceBetween,
-  Button,
 } from "@cloudscape-design/components";
+import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { MusicalList } from "./musical-list";
 
 interface MusicalsPageContentProps {
   session?: Session | null;
 }
 
-export function MusicalsPageContent({ session }: MusicalsPageContentProps = {}) {
+export function MusicalsPageContent({
+  session,
+}: MusicalsPageContentProps = {}) {
   const router = useRouter();
   return (
     <ContentLayout
@@ -26,7 +28,9 @@ export function MusicalsPageContent({ session }: MusicalsPageContentProps = {}) 
             variant="h1"
             description="Browse our collection of musicals"
             actions={
-                <Button onClick={() => router.push('/')} variant="primary">Back to home</Button>
+              <Button onClick={() => router.push("/")} variant="primary">
+                Back to home
+              </Button>
             }
           >
             Musicals

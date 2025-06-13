@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
-  Container,
-  Header,
-  SpaceBetween,
+  Alert,
   Button,
+  Container,
+  ContentLayout,
   Form,
   FormField,
+  Header,
   Input,
-  ContentLayout,
-  Alert,
+  SpaceBetween,
 } from "@cloudscape-design/components";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function SignupForm() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export function SignupForm() {
         body: JSON.stringify({ username, password }),
       });
 
-      const data = await response.json() as { error?: string };
+      const data = (await response.json()) as { error?: string };
 
       if (!response.ok) {
         throw new Error(data.error ?? "Failed to sign up");
@@ -84,10 +84,7 @@ export function SignupForm() {
         <Form
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button
-                variant="link"
-                onClick={() => router.push("/signin")}
-              >
+              <Button variant="link" onClick={() => router.push("/signin")}>
                 Already have an account? Sign in
               </Button>
               <Button
@@ -107,7 +104,11 @@ export function SignupForm() {
           )}
 
           {success && (
-            <Alert type="success" dismissible onDismiss={() => setSuccess(false)}>
+            <Alert
+              type="success"
+              dismissible
+              onDismiss={() => setSuccess(false)}
+            >
               Account created successfully! Redirecting to login...
             </Alert>
           )}

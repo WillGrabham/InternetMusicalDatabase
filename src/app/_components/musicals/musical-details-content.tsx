@@ -1,17 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import {
-  ContentLayout,
-  Container,
-  Header,
-  SpaceBetween,
+  Alert,
   Box,
   Button,
   ColumnLayout,
-  Alert,
+  Container,
+  ContentLayout,
+  Header,
+  SpaceBetween,
 } from "@cloudscape-design/components";
 import type { Musical } from "@prisma/client";
+import Image from "next/image";
 
 interface MusicalDetailsContentProps {
   musical: Musical;
@@ -19,9 +19,13 @@ interface MusicalDetailsContentProps {
   isAdmin?: boolean;
 }
 
-export function MusicalDetailsContent({ musical, isUnreleased, isAdmin }: MusicalDetailsContentProps) {
+export function MusicalDetailsContent({
+  musical,
+  isUnreleased,
+  isAdmin,
+}: MusicalDetailsContentProps) {
   const releaseDate = new Date(musical.releaseDate).toLocaleDateString();
-  
+
   return (
     <ContentLayout
       header={
@@ -37,10 +41,13 @@ export function MusicalDetailsContent({ musical, isUnreleased, isAdmin }: Musica
           >
             {musical.title}
           </Header>
-          
+
           {isUnreleased && (
             <Alert type="warning">
-              This musical has not been released yet. {isAdmin ? "You can see it because you are an administrator." : "It is only visible to administrators."}
+              This musical has not been released yet.{" "}
+              {isAdmin
+                ? "You can see it because you are an administrator."
+                : "It is only visible to administrators."}
             </Alert>
           )}
         </SpaceBetween>
@@ -49,7 +56,9 @@ export function MusicalDetailsContent({ musical, isUnreleased, isAdmin }: Musica
       <Container>
         <ColumnLayout columns={2} variant="text-grid">
           <div>
-            <div style={{ position: "relative", width: "100%", height: "400px" }}>
+            <div
+              style={{ position: "relative", width: "100%", height: "400px" }}
+            >
               <Image
                 src={musical.posterUrl}
                 alt={`${musical.title} poster`}
@@ -59,11 +68,11 @@ export function MusicalDetailsContent({ musical, isUnreleased, isAdmin }: Musica
               />
             </div>
           </div>
-          
+
           <SpaceBetween size="l">
             <Box variant="h2">Description</Box>
             <Box variant="p">{musical.description}</Box>
-            
+
             <Box variant="h3">Details</Box>
             <Box>
               <Box variant="awsui-key-label">Release Date</Box>

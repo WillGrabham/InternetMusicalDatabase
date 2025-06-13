@@ -1,6 +1,6 @@
+import { compare } from "bcrypt";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
 
 import { db } from "~/server/db";
 
@@ -39,7 +39,7 @@ export const authConfig = {
       name: "Credentials",
       credentials: {
         username: { label: "Username", type: "text", placeholder: "username" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
@@ -47,14 +47,17 @@ export const authConfig = {
         }
 
         const user = await db.user.findUnique({
-          where: { username: credentials.username as string }
+          where: { username: credentials.username as string },
         });
 
         if (!user) {
           return null;
         }
 
-        const passwordMatch = await compare(credentials.password as string, user.password);
+        const passwordMatch = await compare(
+          credentials.password as string,
+          user.password,
+        );
 
         if (!passwordMatch) {
           return null;
@@ -64,9 +67,9 @@ export const authConfig = {
           id: user.id,
           name: user.username,
           email: user.username + "@example.com", // NextAuth requires an email
-          role: user.role
+          role: user.role,
         };
-      }
+      },
     }),
   ],
   callbacks: {

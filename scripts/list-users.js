@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -14,10 +14,10 @@ async function main() {
       },
     });
 
-    console.log('Users in the database:');
+    console.log("Users in the database:");
     console.table(users);
   } catch (error) {
-    console.error('Error listing users:', error);
+    console.error("Error listing users:", error);
   } finally {
     await prisma.$disconnect();
   }

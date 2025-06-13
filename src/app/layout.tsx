@@ -1,7 +1,7 @@
-import { type Metadata } from "next";
 import "@cloudscape-design/global-styles/index.css";
-import { TRPCReactProvider } from "~/trpc/react";
+import { type Metadata } from "next";
 import { CloudscapeLayout } from "~/app/_components/cloudscape-layout";
+import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
   title: "Create T3 App",

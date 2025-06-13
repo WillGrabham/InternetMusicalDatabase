@@ -1,5 +1,9 @@
-import { createCallerFactory, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { z } from "zod";
+import {
+  createCallerFactory,
+  createTRPCRouter,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { musicalRouter } from "./routers/musical";
 
 /**

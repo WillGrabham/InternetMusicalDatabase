@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
+import { NextResponse } from "next/server";
 import { db } from "~/server/db";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json() as { username?: string; password?: string };
+    const body = (await req.json()) as { username?: string; password?: string };
     const { username, password } = body;
 
     // Validate input
     if (!username || !password) {
       return NextResponse.json(
         { error: "Username and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "Username already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -47,13 +47,13 @@ export async function POST(req: Request) {
         username: user.username,
         role: user.role,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating user:", error);
     return NextResponse.json(
       { error: "Failed to create user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

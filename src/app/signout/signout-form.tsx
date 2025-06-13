@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import {
+  Alert,
+  Button,
   Container,
+  ContentLayout,
+  Form,
   Header,
   SpaceBetween,
-  Button,
-  Form,
-  ContentLayout,
-  Alert,
 } from "@cloudscape-design/components";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function SignoutForm() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export function SignoutForm() {
     try {
       await signOut({ redirect: false });
       setSuccess(true);
-      
+
       // Redirect to home page after a short delay
       setTimeout(() => {
         router.push("/");
@@ -49,10 +49,7 @@ export function SignoutForm() {
         <Form
           actions={
             <SpaceBetween direction="horizontal" size="xs">
-              <Button
-                variant="link"
-                onClick={() => router.push("/")}
-              >
+              <Button variant="link" onClick={() => router.push("/")}>
                 Return to home page
               </Button>
               <Button
@@ -72,7 +69,11 @@ export function SignoutForm() {
           )}
 
           {success && (
-            <Alert type="success" dismissible onDismiss={() => setSuccess(false)}>
+            <Alert
+              type="success"
+              dismissible
+              onDismiss={() => setSuccess(false)}
+            >
               You have been signed out successfully! Redirecting to home page...
             </Alert>
           )}

@@ -1,18 +1,18 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Configuration
-  const adminUsername = 'admin';
-  const adminPassword = 'admin123'; // This would be more secure in a real application
+  const adminUsername = "admin";
+  const adminPassword = "admin123"; // This would be more secure in a real application
   const saltRounds = 10;
 
   try {
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({
-      where: { username: adminUsername }
+      where: { username: adminUsername },
     });
 
     if (existingUser) {
@@ -28,7 +28,7 @@ async function main() {
       data: {
         username: adminUsername,
         password: hashedPassword,
-        role: 'ADMIN',
+        role: "ADMIN",
       },
     });
 
@@ -37,7 +37,7 @@ async function main() {
     console.log(`Role: ${user.role}`);
     console.log(`ID: ${user.id}`);
   } catch (error) {
-    console.error('Error creating admin user:', error);
+    console.error("Error creating admin user:", error);
   } finally {
     await prisma.$disconnect();
   }

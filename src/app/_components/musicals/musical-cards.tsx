@@ -6,9 +6,9 @@ import {
   Cards,
   SpaceBetween,
 } from "@cloudscape-design/components";
+import type { Musical } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import type { Musical } from "@prisma/client";
 
 interface MusicalCardProps {
   musicals: Musical[];
@@ -33,7 +33,9 @@ export function MusicalCards({ musicals }: MusicalCardProps) {
           {
             id: "image",
             content: (item) => (
-              <div style={{ position: "relative", width: "100%", height: "200px" }}>
+              <div
+                style={{ position: "relative", width: "100%", height: "200px" }}
+              >
                 <Image
                   src={item.posterUrl}
                   alt={`${item.title} poster`}
@@ -63,7 +65,9 @@ export function MusicalCards({ musicals }: MusicalCardProps) {
             id: "actions",
             content: (item) => (
               <SpaceBetween direction="horizontal" size="xs">
-                <Button onClick={() => router.push(`/musicals/${item.id}`)}>View Details</Button>
+                <Button onClick={() => router.push(`/musicals/${item.id}`)}>
+                  View Details
+                </Button>
               </SpaceBetween>
             ),
           },
