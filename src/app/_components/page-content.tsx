@@ -3,7 +3,6 @@
 import {
   Alert,
   Button,
-  Container,
   ContentLayout,
   Header,
   SpaceBetween,
@@ -46,9 +45,7 @@ export function PageContent({ session }: PageContentProps) {
         </SpaceBetween>
       }
     >
-      <Container>
-        <HomeMusicalList session={session} />
-      </Container>
+      <HomeMusicalList session={session} />
     </ContentLayout>
   );
 }

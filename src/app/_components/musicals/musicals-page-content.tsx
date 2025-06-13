@@ -2,7 +2,6 @@
 
 import {
   Button,
-  Container,
   ContentLayout,
   Header,
   SpaceBetween,
@@ -38,11 +37,9 @@ export function MusicalsPageContent({
         </SpaceBetween>
       }
     >
-      <Container>
-        <Suspense fallback={<div>Loading musicals...</div>}>
-          <MusicalList session={session} />
-        </Suspense>
-      </Container>
+      <Suspense fallback={<div>Loading musicals...</div>}>
+        <MusicalList session={session} />
+      </Suspense>
     </ContentLayout>
   );
 }
