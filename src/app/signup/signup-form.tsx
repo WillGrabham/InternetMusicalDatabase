@@ -13,26 +13,31 @@ import {
 } from "@cloudscape-design/components";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useZodForm } from "~/hooks/useZodForm";
+import { CreateUserSchema } from "~/types/schemas";
 
 export function SignupForm() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const { formData, setValue, getFieldError, validate } =
+    useZodForm(CreateUserSchema);
+
   const handleSubmit = async () => {
     setError("");
     setLoading(true);
 
-    // Validate form
-    if (!username || !password) {
-      setError("Username and password are required");
+    const validData = validate();
+    if (!validData) {
+      setError("Please fix the validation errors");
       setLoading(false);
       return;
     }
+
+    const { username, password } = validData;
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -57,14 +62,14 @@ export function SignupForm() {
 
       // Success
       setSuccess(true);
-      setUsername("");
-      setPassword("");
+      setValue("username", "");
+      setValue("password", "");
       setConfirmPassword("");
 
       // Redirect to login after a short delay
       setTimeout(() => {
         router.push("/signin");
-      }, 2000);
+      }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -109,23 +114,31 @@ export function SignupForm() {
               dismissible
               onDismiss={() => setSuccess(false)}
             >
-              Account created successfully! Redirecting to login...
+              Account created successfully! Redirecting to home...
             </Alert>
           )}
 
-          <FormField label="Username" controlId="username">
+          <FormField
+            label="Username"
+            controlId="username"
+            errorText={getFieldError("username")}
+          >
             <Input
-              value={username}
-              onChange={({ detail }) => setUsername(detail.value)}
+              value={formData.username}
+              onChange={({ detail }) => setValue("username", detail.value)}
               controlId="username"
               disabled={loading}
             />
           </FormField>
 
-          <FormField label="Password" controlId="password">
+          <FormField
+            label="Password"
+            controlId="password"
+            errorText={getFieldError("password")}
+          >
             <Input
-              value={password}
-              onChange={({ detail }) => setPassword(detail.value)}
+              value={formData.password}
+              onChange={({ detail }) => setValue("password", detail.value)}
               type="password"
               controlId="password"
               disabled={loading}

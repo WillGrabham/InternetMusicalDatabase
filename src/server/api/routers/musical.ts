@@ -6,10 +6,17 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import {
+  CreateMusicalSchema,
+  GetMusicalsSchema,
+  MusicalIdSchema,
+  UpdateMusicalSchema,
+  UserRoleEnum,
+} from "~/types/schemas";
 
 // Admin-only procedure - extends the protected procedure to check for admin role
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role !== "ADMIN") {
+  if (ctx.session.user.role !== UserRoleEnum.enum.ADMIN) {
     throw new TRPCError({
       code: "FORBIDDEN",
       message: "Admin access required",
@@ -20,22 +27,10 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   });
 });
 
-// Input validation schemas
-const musicalInputSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  posterUrl: z.string().url("Valid URL is required"),
-  releaseDate: z.date(),
-});
-
-const musicalIdSchema = z.object({
-  id: z.string().cuid("Invalid musical ID"),
-});
-
 export const musicalRouter = createTRPCRouter({
   // Create a new musical (admin only)
   createMusical: adminProcedure
-    .input(musicalInputSchema)
+    .input(CreateMusicalSchema)
     .mutation(async ({ ctx, input }) => {
       return ctx.db.musical.create({
         data: {
@@ -50,7 +45,7 @@ export const musicalRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().cuid("Invalid musical ID"),
-        data: musicalInputSchema.partial(),
+        data: UpdateMusicalSchema,
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -76,7 +71,7 @@ export const musicalRouter = createTRPCRouter({
 
   // Delete a musical (admin only)
   deleteMusical: adminProcedure
-    .input(musicalIdSchema)
+    .input(MusicalIdSchema)
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
 
@@ -99,7 +94,7 @@ export const musicalRouter = createTRPCRouter({
 
   // Get a single musical by ID (public, but unreleased musicals are admin-only)
   getMusical: publicProcedure
-    .input(musicalIdSchema)
+    .input(MusicalIdSchema)
     .query(async ({ ctx, input }) => {
       const { id } = input;
 
@@ -120,7 +115,10 @@ export const musicalRouter = createTRPCRouter({
       // If musical is unreleased, only allow admin access
       if (isUnreleased) {
         // Check if user is authenticated and has admin role
-        if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
+        if (
+          !ctx.session?.user ||
+          ctx.session.user.role !== UserRoleEnum.enum.ADMIN
+        ) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "This musical has not been released yet",
@@ -133,17 +131,7 @@ export const musicalRouter = createTRPCRouter({
 
   // Get all musicals with optional release date filtering (public, but only released musicals for non-admins)
   getMusicals: publicProcedure
-    .input(
-      z
-        .object({
-          releaseDateFrom: z.date().optional(),
-          releaseDateTo: z.date().optional(),
-          limit: z.number().min(1).max(100).default(50),
-          cursor: z.string().nullish(),
-          includeUnreleased: z.boolean().default(false), // Option to include unreleased musicals (admin only)
-        })
-        .optional(),
-    )
+    .input(GetMusicalsSchema)
     .query(async ({ ctx, input }) => {
       const limit = input?.limit ?? 50;
       const cursor = input?.cursor;
@@ -152,7 +140,8 @@ export const musicalRouter = createTRPCRouter({
       // Check if user wants to see unreleased musicals and has admin privileges
       if (
         includeUnreleased &&
-        (!ctx.session?.user || ctx.session.user.role !== "ADMIN")
+        (!ctx.session?.user ||
+          ctx.session.user.role !== UserRoleEnum.enum.ADMIN)
       ) {
         throw new TRPCError({
           code: "FORBIDDEN",

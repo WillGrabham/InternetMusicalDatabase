@@ -3,6 +3,7 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "~/server/db";
+import { type UserRole, UserRoleEnum } from "~/types/schemas";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -14,13 +15,13 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      role: string;
+      role: UserRole;
     } & DefaultSession["user"];
   }
 
   interface User {
     // ...other properties
-    role: string;
+    role: UserRole;
   }
 }
 
@@ -63,11 +64,17 @@ export const authConfig = {
           return null;
         }
 
+        const role = UserRoleEnum.safeParse(user.role);
+        if (!role.success) {
+          console.error("Invalid user role:", user.role);
+          return null;
+        }
+
         return {
           id: user.id,
           name: user.username,
           email: user.username + "@example.com", // NextAuth requires an email
-          role: user.role,
+          role: role.data,
         };
       },
     }),
@@ -80,13 +87,28 @@ export const authConfig = {
       }
       return token;
     },
-    session: ({ session, token }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: token.id as string,
-        role: token.role as string,
-      },
-    }),
+    session: ({ session, token }) => {
+      const role = UserRoleEnum.safeParse(token.role);
+      if (!role.success) {
+        console.error("Invalid role in token:", token.role);
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.id as string,
+            role: UserRoleEnum.enum.USER,
+          },
+        };
+      }
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id as string,
+          role: role.data,
+        },
+      };
+    },
   },
 } satisfies NextAuthConfig;

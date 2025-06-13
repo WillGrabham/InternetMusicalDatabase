@@ -1,19 +1,28 @@
 import { hash } from "bcrypt";
 import { NextResponse } from "next/server";
 import { db } from "~/server/db";
+import { CreateUserSchema, UserRoleEnum } from "~/types/schemas";
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { username?: string; password?: string };
-    const { username, password } = body;
+    const body = (await req.json()) as Record<string, unknown>;
 
-    // Validate input
-    if (!username || !password) {
+    const result = CreateUserSchema.safeParse({
+      ...body,
+      role: UserRoleEnum.enum.USER,
+    });
+
+    if (!result.success) {
       return NextResponse.json(
-        { error: "Username and password are required" },
+        {
+          error: "Validation failed",
+          details: result.error.flatten(),
+        },
         { status: 400 },
       );
     }
+
+    const { username, password, role } = result.data;
 
     // Check if username already exists
     const existingUser = await db.user.findUnique({
@@ -36,7 +45,7 @@ export async function POST(req: Request) {
       data: {
         username,
         password: hashedPassword,
-        role: "USER",
+        role,
       },
     });
 

@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Container,
-  DatePicker,
   Form,
   FormField,
   Header,
@@ -14,10 +13,19 @@ import {
   Textarea,
 } from "@cloudscape-design/components";
 import type { Musical } from "@prisma/client";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useZodForm } from "~/hooks/useZodForm";
 import { api } from "~/trpc/react";
+import { CreateMusicalSchema } from "~/types/schemas";
 import { DeleteConfirmation } from "./delete-confirmation";
+
+// Import DatePicker as a client-only component to avoid hydration mismatch
+const DatePicker = dynamic(
+  () => import("@cloudscape-design/components").then((mod) => mod.DatePicker),
+  { ssr: false },
+);
 
 interface MusicalFormProps {
   musical?: Musical;
@@ -26,17 +34,38 @@ interface MusicalFormProps {
 
 export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
   const router = useRouter();
-  const [title, setTitle] = useState(musical?.title ?? "");
-  const [description, setDescription] = useState(musical?.description ?? "");
-  const [posterUrl, setPosterUrl] = useState(musical?.posterUrl ?? "");
-  const [releaseDate, setReleaseDate] = useState<string>(
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  // Memoize initialData to prevent it from being recreated on every render
+  const initialData = useMemo(() => {
+    return musical
+      ? {
+          title: musical.title,
+          description: musical.description,
+          posterUrl: musical.posterUrl,
+          releaseDate: musical.releaseDate,
+        }
+      : {};
+  }, [musical]);
+
+  const { formData, setValue, getFieldError, validate, isValid } = useZodForm(
+    CreateMusicalSchema,
+    initialData,
+  );
+
+  const [releaseDateString, setReleaseDateString] = useState<string>(
     musical?.releaseDate
       ? (new Date(musical.releaseDate).toISOString().split("T")[0] ?? "")
       : "",
   );
-  const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  useEffect(() => {
+    if (releaseDateString) {
+      setValue("releaseDate", new Date(releaseDateString));
+    }
+  }, [releaseDateString]);
 
   // tRPC mutations
   const createMutation = api.musical.createMusical.useMutation({
@@ -72,37 +101,23 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
     },
   });
 
-  // Form validation
-  const isFormValid =
-    title.trim() !== "" &&
-    description.trim() !== "" &&
-    posterUrl.trim() !== "" &&
-    releaseDate !== "";
-
-  // Handle form submission
   const handleSubmit = () => {
-    if (!isFormValid) {
-      setError("Please fill in all required fields");
+    const validData = validate();
+    if (!validData) {
+      setError("Please fix the validation errors");
       return;
     }
 
     setIsSubmitting(true);
     setError(null);
 
-    const data = {
-      title,
-      description,
-      posterUrl,
-      releaseDate: new Date(releaseDate || new Date().toISOString()),
-    };
-
     if (isEdit && musical) {
       updateMutation.mutate({
         id: musical.id,
-        data,
+        data: validData,
       });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(validData);
     }
   };
 
@@ -145,7 +160,7 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
             <Button
               variant="primary"
               onClick={handleSubmit}
-              disabled={!isFormValid || isSubmitting}
+              disabled={!isValid || isSubmitting}
               loading={isSubmitting && !deleteMutation.isPending}
             >
               {isEdit ? "Update" : "Create"}
@@ -156,39 +171,42 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
         <SpaceBetween size="l">
           {error && <Alert type="error">{error}</Alert>}
 
-          <FormField label="Title" constraintText="Required">
+          <FormField label="Title" errorText={getFieldError("title")}>
             <Input
-              value={title}
-              onChange={({ detail }) => setTitle(detail.value)}
+              value={formData.title}
+              onChange={({ detail }) => setValue("title", detail.value)}
               placeholder="Enter musical title"
             />
           </FormField>
 
-          <FormField label="Description" constraintText="Required">
+          <FormField
+            label="Description"
+            errorText={getFieldError("description")}
+          >
             <Textarea
-              value={description}
-              onChange={({ detail }) => setDescription(detail.value)}
+              value={formData.description}
+              onChange={({ detail }) => setValue("description", detail.value)}
               placeholder="Enter musical description"
               rows={5}
             />
           </FormField>
 
-          <FormField
-            label="Poster URL"
-            constraintText="Required, must be a valid URL"
-          >
+          <FormField label="Poster URL" errorText={getFieldError("posterUrl")}>
             <Input
-              value={posterUrl}
-              onChange={({ detail }) => setPosterUrl(detail.value)}
+              value={formData.posterUrl}
+              onChange={({ detail }) => setValue("posterUrl", detail.value)}
               placeholder="https://example.com/poster.jpg"
               type="url"
             />
           </FormField>
 
-          <FormField label="Release Date" constraintText="Required">
+          <FormField
+            label="Release Date"
+            errorText={getFieldError("releaseDate")}
+          >
             <DatePicker
-              value={releaseDate}
-              onChange={({ detail }) => setReleaseDate(detail.value)}
+              value={releaseDateString}
+              onChange={({ detail }) => setReleaseDateString(detail.value)}
               placeholder="YYYY-MM-DD"
             />
           </FormField>
