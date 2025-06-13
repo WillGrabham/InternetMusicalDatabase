@@ -51,7 +51,7 @@ model User {
     sessions      Session[]
 }
 
-model Film {
+model Musical {
     id          String   @id @default(cuid())
     title       String
     description String

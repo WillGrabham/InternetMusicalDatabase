@@ -22,7 +22,7 @@ export function PageContent({ session }: PageContentProps) {
         <SpaceBetween size="m">
           <Header
             variant="h1"
-            description="Browse and discover films"
+            description="Browse and discover musicals"
             actions={
               <SpaceBetween direction="horizontal" size="xs">
                 {!session && (
@@ -36,7 +36,7 @@ export function PageContent({ session }: PageContentProps) {
               </SpaceBetween>
             }
           >
-            Film Database
+            Musical Database
           </Header>
 
           {session && (
