@@ -26,4 +26,22 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 
 ## How do I deploy this?
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### PostgreSQL for Vercel Deployment
+
+This project uses PostgreSQL as its database, which is compatible with Vercel's serverless architecture.
+
+For local development:
+```bash
+# Start the PostgreSQL database using Docker
+docker compose up -d
+
+# Start the development server
+npm run dev
+```
+
+For deployment to Vercel:
+1. Create a PostgreSQL database on Vercel or another provider
+2. Set the `DATABASE_URL` environment variable to your PostgreSQL connection string
+3. Deploy your application
+
+For other deployment options, follow the T3 deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
