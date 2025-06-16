@@ -17,19 +17,12 @@ export function SignoutForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   const handleSignOut = async () => {
     setLoading(true);
     try {
       await signOut({ redirect: false });
-      setSuccess(true);
-
-      // Redirect to home page after a short delay
-      setTimeout(() => {
-        router.push("/");
-        router.refresh();
-      }, 2000);
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -65,16 +58,6 @@ export function SignoutForm() {
           {error && (
             <Alert type="error" dismissible onDismiss={() => setError("")}>
               {error}
-            </Alert>
-          )}
-
-          {success && (
-            <Alert
-              type="success"
-              dismissible
-              onDismiss={() => setSuccess(false)}
-            >
-              You have been signed out successfully! Redirecting to home page...
             </Alert>
           )}
 

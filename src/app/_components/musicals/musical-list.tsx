@@ -26,14 +26,12 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   const [isRetrying, setIsRetrying] = useState(false);
   const itemsPerPage = 10;
 
-  // Fetch musicals with pagination
   const { data, isLoading, error, refetch } = api.musical.getMusicals.useQuery({
     limit: itemsPerPage,
     cursor: cursor ?? undefined,
-    includeUnreleased: !!session?.user, // Only include unreleased musicals for logged in users
+    includeUnreleased: !!session?.user,
   });
 
-  // Filter musicals based on search text
   const filteredMusicals =
     data?.musicals.filter(
       (musical) =>
@@ -47,18 +45,14 @@ export function MusicalList({ session }: MusicalListProps = {}) {
     setIsRetrying(false);
   };
 
-  // Handle pagination
   const handlePaginationChange = (event: {
     detail: { currentPageIndex: number };
   }) => {
     setCurrentPage(event.detail.currentPageIndex);
 
-    // If going to next page and we have a nextCursor, use it
     if (event.detail.currentPageIndex > currentPage && data?.nextCursor) {
       setCursor(data.nextCursor);
-    }
-    // If going back to previous page, reset cursor
-    else if (event.detail.currentPageIndex < currentPage) {
+    } else if (event.detail.currentPageIndex < currentPage) {
       setCursor(null);
     }
   };

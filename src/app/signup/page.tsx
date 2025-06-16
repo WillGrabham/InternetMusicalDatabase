@@ -6,10 +6,8 @@ import { NavigationBar } from "../_components/navigation-bar";
 import { SignupForm } from "./signup-form";
 
 export default async function SignupPage() {
-  // Check if user is already logged in
   const session = await auth();
 
-  // If user is logged in, redirect to home page
   if (session) {
     redirect("/");
   }

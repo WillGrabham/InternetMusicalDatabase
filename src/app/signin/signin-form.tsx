@@ -26,7 +26,6 @@ export function SigninForm() {
     setError("");
     setLoading(true);
 
-    // Validate form
     if (!username || !password) {
       setError("Username and password are required");
       setLoading(false);
@@ -44,7 +43,6 @@ export function SigninForm() {
         throw new Error("Invalid username or password");
       }
 
-      // Success - redirect to home page
       router.push("/");
       router.refresh();
     } catch (err) {

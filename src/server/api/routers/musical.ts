@@ -37,7 +37,6 @@ export const musicalRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
 
-      // Check if musical exists
       const musical = await ctx.db.musical.findUnique({
         where: { id },
       });
@@ -61,7 +60,6 @@ export const musicalRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
 
-      // Check if musical exists
       const musical = await ctx.db.musical.findUnique({
         where: { id },
       });
@@ -95,10 +93,8 @@ export const musicalRouter = createTRPCRouter({
         });
       }
 
-      // Check if musical is not yet released (release date is in the future)
       const isUnreleased = musical.releaseDate > new Date();
 
-      // If musical is unreleased, only allow authenticated users to access it
       if (isUnreleased && !ctx.session?.user) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -109,7 +105,7 @@ export const musicalRouter = createTRPCRouter({
       return musical;
     }),
 
-  // Get all musicals with optional release date filtering (public, but unreleased musicals require authentication)
+  // Get all musicals (public, but unreleased musicals require authentication)
   getMusicals: publicProcedure
     .input(GetMusicalsSchema)
     .query(async ({ ctx, input }) => {
@@ -117,7 +113,6 @@ export const musicalRouter = createTRPCRouter({
       const cursor = input?.cursor;
       const includeUnreleased = input?.includeUnreleased ?? false;
 
-      // Check if user wants to see unreleased musicals and is authenticated
       if (includeUnreleased && !ctx.session?.user) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -128,21 +123,7 @@ export const musicalRouter = createTRPCRouter({
       const currentDate = new Date();
 
       const where = {
-        // For non-authenticated users or when not explicitly requesting unreleased musicals,
-        // only show musicals with release dates in the past
         ...(!includeUnreleased ? { releaseDate: { lte: currentDate } } : {}),
-
-        // Apply any additional date filters provided by the user
-        ...(input?.releaseDateFrom || input?.releaseDateTo
-          ? {
-              releaseDate: {
-                ...(input.releaseDateFrom && { gte: input.releaseDateFrom }),
-                ...(input.releaseDateTo && { lte: input.releaseDateTo }),
-                // Maintain the "released only" filter for non-authenticated users
-                ...(!includeUnreleased ? { lte: currentDate } : {}),
-              },
-            }
-          : {}),
       };
 
       const musicals = await ctx.db.musical.findMany({

@@ -38,7 +38,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  // Memoize initialData to prevent it from being recreated on every render
   const initialData = useMemo(() => {
     return musical
       ? {
@@ -67,7 +66,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
     }
   }, [releaseDateString]);
 
-  // tRPC mutations
   const createMutation = api.musical.createMusical.useMutation({
     onSuccess: () => {
       router.push("/musicals");
@@ -128,17 +126,14 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
     }
   };
 
-  // Handle showing delete confirmation
   const handleDeleteClick = () => {
     setShowDeleteConfirmation(true);
   };
 
-  // Handle delete confirmation dismiss
   const handleDeleteDismiss = () => {
     setShowDeleteConfirmation(false);
   };
 
-  // Handle musical deletion after confirmation
   const handleDeleteConfirm = () => {
     router.push("/musicals");
     router.refresh();

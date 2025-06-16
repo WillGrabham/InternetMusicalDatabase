@@ -21,7 +21,6 @@ export function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const { formData, setValue, getFieldError, validate } =
     useZodForm(CreateUserSchema);
@@ -60,16 +59,7 @@ export function SignupForm() {
         throw new Error(data.error ?? "Failed to sign up");
       }
 
-      // Success
-      setSuccess(true);
-      setValue("username", "");
-      setValue("password", "");
-      setConfirmPassword("");
-
-      // Redirect to login after a short delay
-      setTimeout(() => {
-        router.push("/signin");
-      }, 1000);
+      router.push("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -105,16 +95,6 @@ export function SignupForm() {
           {error && (
             <Alert type="error" dismissible onDismiss={() => setError("")}>
               {error}
-            </Alert>
-          )}
-
-          {success && (
-            <Alert
-              type="success"
-              dismissible
-              onDismiss={() => setSuccess(false)}
-            >
-              Account created successfully! Redirecting to home...
             </Alert>
           )}
 

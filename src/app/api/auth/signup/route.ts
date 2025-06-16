@@ -9,7 +9,6 @@ export async function POST(req: Request) {
 
     const result = CreateUserSchema.safeParse({
       ...body,
-      role: UserRoleEnum.enum.USER,
     });
 
     if (!result.success) {
@@ -22,9 +21,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const { username, password, role } = result.data;
+    const { username, password } = result.data;
 
-    // Check if username already exists
     const existingUser = await db.user.findUnique({
       where: { username },
     });
@@ -36,20 +34,17 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash the password
     const saltRounds = 10;
     const hashedPassword = await hash(password, saltRounds);
 
-    // Create the user
     const user = await db.user.create({
       data: {
         username,
         password: hashedPassword,
-        role,
+        role: UserRoleEnum.Enum.USER,
       },
     });
 
-    // Return the user without the password
     return NextResponse.json(
       {
         id: user.id,

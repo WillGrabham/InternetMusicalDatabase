@@ -11,7 +11,6 @@ export function useZodForm<T extends ZodType>(
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isValid, setIsValid] = useState(false);
 
-  // Update form data when initialData changes (useful for edit forms)
   useEffect(() => {
     if (Object.keys(initialData).length > 0) {
       setFormData(initialData as FormData);
@@ -22,7 +21,6 @@ export function useZodForm<T extends ZodType>(
     validate();
   }, [formData]);
 
-  // Set a single form field value
   const setValue = (key: string, value: unknown) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };

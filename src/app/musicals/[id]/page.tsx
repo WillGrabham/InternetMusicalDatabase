@@ -12,7 +12,6 @@ import { api } from "~/trpc/server";
 
 export const dynamic = "force-dynamic";
 
-// Cache the musical data fetch to avoid duplicate API calls
 const getMusical = cache(async (id: string) => {
   try {
     return await api.musical.getMusical({ id });
