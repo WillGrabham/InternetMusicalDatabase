@@ -44,7 +44,6 @@ export function SigninForm() {
       }
 
       router.push("/");
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

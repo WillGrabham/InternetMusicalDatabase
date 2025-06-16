@@ -69,7 +69,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
   const createMutation = api.musical.createMusical.useMutation({
     onSuccess: () => {
       router.push("/musicals");
-      router.refresh();
     },
     onError: (error) => {
       setError(error.message);
@@ -80,7 +79,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
   const updateMutation = api.musical.updateMusical.useMutation({
     onSuccess: () => {
       router.push(`/musicals/${musical?.id}`);
-      router.refresh();
     },
     onError: (error) => {
       setError(error.message);
@@ -91,7 +89,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
   const deleteMutation = api.musical.deleteMusical.useMutation({
     onSuccess: () => {
       router.push("/musicals");
-      router.refresh();
     },
     onError: (error) => {
       setError(error.message);
@@ -136,7 +133,6 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
 
   const handleDeleteConfirm = () => {
     router.push("/musicals");
-    router.refresh();
   };
 
   return (

@@ -11,9 +11,11 @@ import {
   Input,
   SpaceBetween,
 } from "@cloudscape-design/components";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useZodForm } from "~/hooks/useZodForm";
+import { api } from "~/trpc/react";
 import { CreateUserSchema } from "~/types/schemas";
 
 export function SignupForm() {
@@ -24,6 +26,27 @@ export function SignupForm() {
 
   const { formData, setValue, getFieldError, validate } =
     useZodForm(CreateUserSchema);
+
+  const signup = api.user.signup.useMutation({
+    onSuccess: async (data) => {
+      const result = await signIn("credentials", {
+        username: data.username,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError("Account created but failed to sign in automatically");
+        setLoading(false);
+      } else {
+        router.push("/");
+      }
+    },
+    onError: (error) => {
+      setError(error.message);
+      setLoading(false);
+    },
+  });
 
   const handleSubmit = async () => {
     setError("");
@@ -44,27 +67,7 @@ export function SignupForm() {
       return;
     }
 
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error ?? "Failed to sign up");
-      }
-
-      router.push("/");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
+    signup.mutate({ username, password });
   };
 
   return (
