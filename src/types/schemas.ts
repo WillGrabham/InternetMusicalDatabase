@@ -67,6 +67,7 @@ export const GetMusicalsSchema = z
     limit: z.number().min(1).max(100).default(50),
     cursor: z.string().nullish(),
     includeUnreleased: z.boolean().default(false),
+    searchText: z.string().optional(),
   })
   .optional();
 

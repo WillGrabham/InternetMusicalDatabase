@@ -24,20 +24,16 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   const [currentPage, setCurrentPage] = useState(1);
   const [cursor, setCursor] = useState<string | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   const { data, isLoading, error, refetch } = api.musical.getMusicals.useQuery({
     limit: itemsPerPage,
     cursor: cursor ?? undefined,
     includeUnreleased: !!session?.user,
+    searchText: filterText || undefined,
   });
 
-  const filteredMusicals =
-    data?.musicals.filter(
-      (musical) =>
-        musical.title.toLowerCase().includes(filterText.toLowerCase()) ||
-        musical.description.toLowerCase().includes(filterText.toLowerCase()),
-    ) ?? [];
+  const musicals = data?.musicals ?? [];
 
   const handleRetry = async () => {
     setIsRetrying(true);
@@ -66,7 +62,11 @@ export function MusicalList({ session }: MusicalListProps = {}) {
           filteringText={filterText}
           filteringPlaceholder="Find musicals"
           filteringAriaLabel="Filter musicals"
-          onChange={({ detail }) => setFilterText(detail.filteringText)}
+          onChange={({ detail }) => {
+            setFilterText(detail.filteringText);
+            setCursor(null);
+            setCurrentPage(1);
+          }}
         />
 
         {isLoading || isRetrying ? (
@@ -77,7 +77,7 @@ export function MusicalList({ session }: MusicalListProps = {}) {
             message={error.message}
             onRetry={handleRetry}
           />
-        ) : filteredMusicals.length === 0 ? (
+        ) : musicals.length === 0 ? (
           <Box textAlign="center">
             <b>No musicals found</b>
             <Box padding={{ bottom: "s" }} variant="p">
@@ -86,7 +86,7 @@ export function MusicalList({ session }: MusicalListProps = {}) {
           </Box>
         ) : (
           <SpaceBetween size="l">
-            <MusicalCards musicals={filteredMusicals} />
+            <MusicalCards musicals={musicals} />
 
             <Pagination
               currentPageIndex={currentPage}

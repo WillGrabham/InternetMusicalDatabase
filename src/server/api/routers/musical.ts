@@ -112,6 +112,7 @@ export const musicalRouter = createTRPCRouter({
       const limit = input?.limit ?? 50;
       const cursor = input?.cursor;
       const includeUnreleased = input?.includeUnreleased ?? false;
+      const searchText = input?.searchText;
 
       if (includeUnreleased && !ctx.session?.user) {
         throw new TRPCError({
@@ -124,6 +125,14 @@ export const musicalRouter = createTRPCRouter({
 
       const where = {
         ...(!includeUnreleased ? { releaseDate: { lte: currentDate } } : {}),
+        ...(searchText
+          ? {
+              OR: [
+                { title: { contains: searchText } },
+                { description: { contains: searchText } },
+              ],
+            }
+          : {}),
       };
 
       const musicals = await ctx.db.musical.findMany({
