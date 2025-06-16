@@ -9,6 +9,7 @@ import {
 import type { Musical } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface MusicalCardProps {
   musicals: Musical[];
@@ -16,6 +17,11 @@ interface MusicalCardProps {
 
 export function MusicalCards({ musicals }: MusicalCardProps) {
   const router = useRouter();
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+
+  const handleImageLoad = (id: string) => {
+    setLoadedImages((prev) => ({ ...prev, [id]: true }));
+  };
 
   return (
     <Cards
@@ -34,13 +40,24 @@ export function MusicalCards({ musicals }: MusicalCardProps) {
             id: "image",
             content: (item) => (
               <div
-                style={{ position: "relative", width: "100%", height: "200px" }}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  paddingBottom: "150%", // 2:3 aspect ratio for movie posters
+                  backgroundColor: "#f0f0f0",
+                  overflow: "hidden",
+                }}
               >
                 <Image
                   src={item.posterUrl}
                   alt={`${item.title} poster`}
                   fill
-                  style={{ objectFit: "cover" }}
+                  style={{
+                    objectFit: "cover",
+                    opacity: loadedImages[item.id] ? 1 : 0,
+                    transition: "opacity 0.3s ease-in-out",
+                  }}
+                  onLoadingComplete={() => handleImageLoad(item.id)}
                 />
               </div>
             ),

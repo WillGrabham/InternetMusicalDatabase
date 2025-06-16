@@ -10,11 +10,11 @@ import {
 import type { Session } from "next-auth";
 import { HomeMusicalList } from "./musicals/home-musical-list";
 
-interface PageContentProps {
+interface HomePageProps {
   session: Session | null;
 }
 
-export function PageContent({ session }: PageContentProps) {
+export function HomePage({ session }: HomePageProps) {
   return (
     <ContentLayout
       header={

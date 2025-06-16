@@ -59,8 +59,8 @@ export function MusicalDetailsContent({
 
           {isUnreleased && (
             <Alert type="warning">
-              This musical has not been released yet.{" "}
-              {"You can see it because you are signed in."}
+              This musical has not been released yet. You can see it because you
+              are signed in.
             </Alert>
           )}
         </SpaceBetween>
@@ -70,7 +70,12 @@ export function MusicalDetailsContent({
         <ColumnLayout columns={2} variant="text-grid">
           <div>
             <div
-              style={{ position: "relative", width: "100%", height: "400px" }}
+              style={{
+                position: "relative",
+                height: "400px",
+                width: "100%",
+                overflow: "hidden",
+              }}
             >
               <Image
                 src={musical.posterUrl}
