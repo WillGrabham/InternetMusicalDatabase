@@ -115,10 +115,7 @@ export const musicalRouter = createTRPCRouter({
       // If musical is unreleased, only allow admin access
       if (isUnreleased) {
         // Check if user is authenticated and has admin role
-        if (
-          !ctx.session?.user ||
-          ctx.session.user.role !== UserRoleEnum.enum.ADMIN
-        ) {
+        if (!ctx.session?.user) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "This musical has not been released yet",
@@ -138,11 +135,7 @@ export const musicalRouter = createTRPCRouter({
       const includeUnreleased = input?.includeUnreleased ?? false;
 
       // Check if user wants to see unreleased musicals and has admin privileges
-      if (
-        includeUnreleased &&
-        (!ctx.session?.user ||
-          ctx.session.user.role !== UserRoleEnum.enum.ADMIN)
-      ) {
+      if (includeUnreleased && !ctx.session?.user) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Only admins can view unreleased musicals",

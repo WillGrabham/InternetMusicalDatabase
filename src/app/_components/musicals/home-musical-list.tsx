@@ -18,11 +18,10 @@ interface HomeMusicalListProps {
 
 export function HomeMusicalList({ session }: HomeMusicalListProps) {
   const router = useRouter();
-  const isAdmin = session?.user?.role === "ADMIN";
 
   const { data, isLoading, error } = api.musical.getMusicals.useQuery({
     limit: 4,
-    includeUnreleased: isAdmin,
+    includeUnreleased: !!session?.user,
   });
 
   const musicals = data?.musicals ?? [];

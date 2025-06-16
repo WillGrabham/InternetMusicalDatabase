@@ -60,9 +60,7 @@ export function MusicalDetailsContent({
           {isUnreleased && (
             <Alert type="warning">
               This musical has not been released yet.{" "}
-              {isAdmin
-                ? "You can see it because you are an administrator."
-                : "It is only visible to administrators."}
+              {"You can see it because you are signed in."}
             </Alert>
           )}
         </SpaceBetween>

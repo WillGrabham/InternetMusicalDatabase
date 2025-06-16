@@ -18,7 +18,6 @@ interface MusicalListProps {
 }
 
 export function MusicalList({ session }: MusicalListProps = {}) {
-  const isAdmin = session?.user?.role === "ADMIN";
   const [filterText, setFilterText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [cursor, setCursor] = useState<string | null>(null);
@@ -28,8 +27,10 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   const { data, isLoading, error } = api.musical.getMusicals.useQuery({
     limit: itemsPerPage,
     cursor: cursor ?? undefined,
-    includeUnreleased: isAdmin, // Only include unreleased musicals for admins
+    includeUnreleased: !!session?.user, // Only include unreleased musicals for logged in users
   });
+
+  console.log("user" + !!session?.user);
 
   // Filter musicals based on search text
   const filteredMusicals =
