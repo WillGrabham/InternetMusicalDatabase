@@ -13,6 +13,7 @@ import { ZodError } from "zod";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { UserRoleEnum } from "~/types/schemas";
 
 /**
  * 1. CONTEXT
@@ -131,3 +132,21 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+/**
+ * Admin-only procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to admin users, use this.
+ * It verifies the session is valid and the user has the ADMIN role.
+ */
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.session.user.role !== UserRoleEnum.enum.ADMIN) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Admin access required",
+    });
+  }
+  return next({
+    ctx,
+  });
+});
