@@ -1,6 +1,5 @@
 import "@cloudscape-design/global-styles/index.css";
 import { type Metadata } from "next";
-import { CloudscapeLayout } from "~/app/_components/cloudscape-layout";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
@@ -15,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <TRPCReactProvider>
-          <CloudscapeLayout>{children}</CloudscapeLayout>
-        </TRPCReactProvider>
+        <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
   );

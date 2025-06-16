@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Alert,
   Box,
   Button,
   Modal,
@@ -22,18 +23,22 @@ export function DeleteConfirmation({
   onDelete,
 }: DeleteConfirmationProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const deleteMutation = api.musical.deleteMusical.useMutation({
     onSuccess: () => {
       setIsDeleting(false);
       onDelete();
     },
-    onError: () => {
+    onError: (err) => {
       setIsDeleting(false);
+      setError(err.message || "Failed to delete musical. Please try again.");
     },
   });
 
   const handleDelete = () => {
     setIsDeleting(true);
+    setError(null);
     deleteMutation.mutate({ id: musical.id });
   };
 
@@ -59,10 +64,18 @@ export function DeleteConfirmation({
         </Box>
       }
     >
-      <Box variant="p">
-        Are you sure you want to delete <strong>{musical.title}</strong>? This
-        action cannot be undone.
-      </Box>
+      <SpaceBetween size="m">
+        {error && (
+          <Alert type="error" header="Error deleting musical">
+            {error}
+          </Alert>
+        )}
+
+        <Box variant="p">
+          Are you sure you want to delete <strong>{musical.title}</strong>? This
+          action cannot be undone.
+        </Box>
+      </SpaceBetween>
     </Modal>
   );
 }

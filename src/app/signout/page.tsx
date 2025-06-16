@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { auth } from "~/server/auth";
+import { CloudscapeLayout } from "../_components/cloudscape-layout";
+import { NavigationBar } from "../_components/navigation-bar";
 import { SignoutForm } from "./signout-form";
 
 export default async function SignoutPage() {
@@ -14,7 +16,10 @@ export default async function SignoutPage() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SignoutForm />
+      <NavigationBar session={session} />
+      <CloudscapeLayout>
+        <SignoutForm />
+      </CloudscapeLayout>
     </Suspense>
   );
 }

@@ -111,13 +111,20 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
     setIsSubmitting(true);
     setError(null);
 
-    if (isEdit && musical) {
-      updateMutation.mutate({
-        id: musical.id,
-        data: validData,
-      });
-    } else {
-      createMutation.mutate(validData);
+    try {
+      if (isEdit && musical) {
+        updateMutation.mutate({
+          id: musical.id,
+          data: validData,
+        });
+      } else {
+        createMutation.mutate(validData);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "An unexpected error occurred",
+      );
+      setIsSubmitting(false);
     }
   };
 
@@ -169,7 +176,29 @@ export function MusicalForm({ musical, isEdit = false }: MusicalFormProps) {
         }
       >
         <SpaceBetween size="l">
-          {error && <Alert type="error">{error}</Alert>}
+          {error && (
+            <Alert type="error" header="Error">
+              <SpaceBetween size="s">
+                <div>{error}</div>
+                {isSubmitting && (
+                  <Box textAlign="center">
+                    <Button onClick={() => setError(null)}>Dismiss</Button>
+                  </Box>
+                )}
+              </SpaceBetween>
+            </Alert>
+          )}
+
+          {(createMutation.isSuccess || updateMutation.isSuccess) && (
+            <Alert
+              type="success"
+              header={isEdit ? "Musical Updated" : "Musical Created"}
+            >
+              {isEdit
+                ? "The musical was successfully updated."
+                : "The musical was successfully created."}
+            </Alert>
+          )}
 
           <FormField label="Title" errorText={getFieldError("title")}>
             <Input

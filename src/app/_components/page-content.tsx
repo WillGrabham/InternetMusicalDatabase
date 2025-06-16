@@ -2,7 +2,7 @@
 
 import {
   Alert,
-  Button,
+  Badge,
   ContentLayout,
   Header,
   SpaceBetween,
@@ -19,29 +19,18 @@ export function PageContent({ session }: PageContentProps) {
     <ContentLayout
       header={
         <SpaceBetween size="m">
-          <Header
-            variant="h1"
-            description="Browse and discover musicals"
-            actions={
-              <SpaceBetween direction="horizontal" size="xs">
-                {!session && (
-                  <Button variant="normal" href="/signup">
-                    Sign up
-                  </Button>
-                )}
-                <Button
-                  variant="primary"
-                  href={session ? "/signout" : "/signin"}
-                >
-                  {session ? "Sign out" : "Sign in"}
-                </Button>
-              </SpaceBetween>
-            }
-          >
+          {session && (
+            <Alert>
+              {" "}
+              {session.user.role === "ADMIN" && (
+                <Badge color="red">Admin</Badge>
+              )}{" "}
+              Welcome back, {session?.user?.name}!
+            </Alert>
+          )}
+          <Header variant="h1" description="Browse and discover musicals">
             Musical Database
           </Header>
-
-          {session && <Alert>Welcome back, {session?.user?.name}!</Alert>}
         </SpaceBetween>
       }
     >

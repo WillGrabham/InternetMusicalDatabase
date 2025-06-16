@@ -9,7 +9,10 @@ import {
 } from "@cloudscape-design/components";
 import type { Session } from "next-auth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { api } from "~/trpc/react";
+import { ErrorState } from "../error-state";
+import { LoadingState } from "../loading-state";
 import { MusicalCards } from "./musical-cards";
 
 interface HomeMusicalListProps {
@@ -18,13 +21,20 @@ interface HomeMusicalListProps {
 
 export function HomeMusicalList({ session }: HomeMusicalListProps) {
   const router = useRouter();
+  const [isRetrying, setIsRetrying] = useState(false);
 
-  const { data, isLoading, error } = api.musical.getMusicals.useQuery({
+  const { data, isLoading, error, refetch } = api.musical.getMusicals.useQuery({
     limit: 4,
     includeUnreleased: !!session?.user,
   });
 
   const musicals = data?.musicals ?? [];
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    await refetch();
+    setIsRetrying(false);
+  };
 
   return (
     <Container>
@@ -40,12 +50,14 @@ export function HomeMusicalList({ session }: HomeMusicalListProps) {
           Latest Musicals
         </Header>
 
-        {isLoading ? (
-          <Box>Loading musicals...</Box>
+        {isLoading || isRetrying ? (
+          <LoadingState text="Loading latest musicals..." />
         ) : error ? (
-          <Box color="text-status-error">
-            Error loading musicals: {error.message}
-          </Box>
+          <ErrorState
+            title="Failed to load musicals"
+            message={error.message}
+            onRetry={handleRetry}
+          />
         ) : musicals.length === 0 ? (
           <Box textAlign="center">
             <b>No musicals found</b>

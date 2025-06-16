@@ -1,8 +1,13 @@
 "use client";
 
 import { AppLayout } from "@cloudscape-design/components";
+import type { ReactNode } from "react";
 
-export function CloudscapeLayout({ children }: { children: React.ReactNode }) {
+interface CloudscapeLayoutProps {
+  children: ReactNode;
+}
+
+export function CloudscapeLayout({ children }: CloudscapeLayoutProps) {
   return (
     <AppLayout content={children} navigationHide={true} toolsHide={true} />
   );

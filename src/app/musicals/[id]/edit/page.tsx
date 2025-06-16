@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { CloudscapeLayout } from "~/app/_components/cloudscape-layout";
 import { MusicalForm } from "~/app/_components/musicals/musical-form";
+import { NavigationBar } from "~/app/_components/navigation-bar";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 
@@ -31,5 +33,12 @@ export default async function EditMusicalPage({ params }: { params: Params }) {
     notFound();
   }
 
-  return <MusicalForm musical={musical} isEdit={true} />;
+  return (
+    <>
+      <NavigationBar session={session} />
+      <CloudscapeLayout>
+        <MusicalForm musical={musical} isEdit={true} />
+      </CloudscapeLayout>
+    </>
+  );
 }

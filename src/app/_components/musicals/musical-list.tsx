@@ -11,6 +11,8 @@ import {
 import type { Session } from "next-auth";
 import { useState } from "react";
 import { api } from "~/trpc/react";
+import { ErrorState } from "../error-state";
+import { LoadingState } from "../loading-state";
 import { MusicalCards } from "./musical-cards";
 
 interface MusicalListProps {
@@ -21,16 +23,15 @@ export function MusicalList({ session }: MusicalListProps = {}) {
   const [filterText, setFilterText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [cursor, setCursor] = useState<string | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
   const itemsPerPage = 10;
 
   // Fetch musicals with pagination
-  const { data, isLoading, error } = api.musical.getMusicals.useQuery({
+  const { data, isLoading, error, refetch } = api.musical.getMusicals.useQuery({
     limit: itemsPerPage,
     cursor: cursor ?? undefined,
     includeUnreleased: !!session?.user, // Only include unreleased musicals for logged in users
   });
-
-  console.log("user" + !!session?.user);
 
   // Filter musicals based on search text
   const filteredMusicals =
@@ -39,6 +40,12 @@ export function MusicalList({ session }: MusicalListProps = {}) {
         musical.title.toLowerCase().includes(filterText.toLowerCase()) ||
         musical.description.toLowerCase().includes(filterText.toLowerCase()),
     ) ?? [];
+
+  const handleRetry = async () => {
+    setIsRetrying(true);
+    await refetch();
+    setIsRetrying(false);
+  };
 
   // Handle pagination
   const handlePaginationChange = (event: {
@@ -68,12 +75,14 @@ export function MusicalList({ session }: MusicalListProps = {}) {
           onChange={({ detail }) => setFilterText(detail.filteringText)}
         />
 
-        {isLoading ? (
-          <Box>Loading musicals...</Box>
+        {isLoading || isRetrying ? (
+          <LoadingState text="Loading musicals..." />
         ) : error ? (
-          <Box color="text-status-error">
-            Error loading musicals: {error.message}
-          </Box>
+          <ErrorState
+            title="Failed to load musicals"
+            message={error.message}
+            onRetry={handleRetry}
+          />
         ) : filteredMusicals.length === 0 ? (
           <Box textAlign="center">
             <b>No musicals found</b>
