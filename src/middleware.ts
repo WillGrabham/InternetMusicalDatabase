@@ -1,7 +1,6 @@
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { UserRoleEnum } from "~/types/schemas";
 import { env } from "./env";
 
 export async function middleware(request: NextRequest) {
@@ -16,7 +15,7 @@ export async function middleware(request: NextRequest) {
       secret: env.AUTH_SECRET,
     });
 
-    if (!token?.role || token.role !== UserRoleEnum.enum.ADMIN) {
+    if (!token?.role || token.role !== "ADMIN") {
       if (!token) {
         const url = new URL("/signin", request.url);
         url.searchParams.set("callbackUrl", encodeURI(request.url));
