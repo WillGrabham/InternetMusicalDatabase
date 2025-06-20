@@ -13,9 +13,12 @@ export async function middleware(request: NextRequest) {
     const token = await getToken({
       req: request,
       secret: env.AUTH_SECRET,
+      secureCookie: env.NODE_ENV === "production",
+      raw: false, // Ensure we get the decoded token
     });
 
-    // Debug: Log the token and role
+    console.log("Environment:", env.NODE_ENV);
+    console.log("Full token:", JSON.stringify(token, null, 2));
     console.log("Role:", token?.role);
     console.log("Role type:", token?.role ? typeof token.role : "undefined");
     console.log("Role === ADMIN:", token?.role === "ADMIN");
