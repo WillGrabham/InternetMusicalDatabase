@@ -15,7 +15,26 @@ export async function middleware(request: NextRequest) {
       secret: env.AUTH_SECRET,
     });
 
-    if (!token?.role || token.role !== "ADMIN") {
+    // Debug: Log the token and role
+    console.log("Role:", token?.role);
+    console.log("Role type:", token?.role ? typeof token.role : "undefined");
+    console.log("Role === ADMIN:", token?.role === "ADMIN");
+
+    console.log(
+      "Role toUpperCase === ADMIN:",
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+      token?.role ? token.role.toString().toUpperCase() === "ADMIN" : false,
+    );
+
+    const isAdmin =
+      token?.role === "ADMIN" ||
+      (typeof token?.role === "string" &&
+        token.role.toUpperCase() === "ADMIN") ||
+      token?.role?.valueOf() === "ADMIN";
+
+    console.log("Is admin:", isAdmin);
+
+    if (!isAdmin) {
       if (!token) {
         const url = new URL("/signin", request.url);
         url.searchParams.set("callbackUrl", encodeURI(request.url));
