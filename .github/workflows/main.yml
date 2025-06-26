@@ -58,6 +58,6 @@ jobs:
             1. Review the changes in the pre-production environment
             2. Run any necessary manual tests
             3. Approve and merge this PR to deploy to production
-          branch: deploy-to-prod/${{ github.sha }}
+          branch: 'deploy-prod-${{ github.sha }}'
           base: prod
           labels: production-deploy
