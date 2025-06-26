@@ -24,6 +24,8 @@ jobs:
       
       - name: Run build (includes format check and tests)
         run: npm run build
+        env:
+          SKIP_ENV_VALIDATION: true
       
       - name: Deploy to Vercel (Preview/Pre-Production)
         uses: amondnet/vercel-action@v25
