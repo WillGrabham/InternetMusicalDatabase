@@ -37,6 +37,17 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Checkout prod branch
+        uses: actions/checkout@v4
+        with:
+          ref: prod
+          fetch-depth: 0
+      
+      - name: Reset prod branch to match main
+        run: |
+          git fetch origin main:main
+          git reset --hard main
+      
       - name: Create Pull Request to prod branch
         if: success()
         uses: peter-evans/create-pull-request@v6
@@ -60,6 +71,6 @@ jobs:
             1. Review the changes in the pre-production environment
             2. Run any necessary manual tests
             3. Approve and merge this PR to deploy to production
-          branch: 'deploy-prod-${{ github.sha }}'
+          branch: 'production-promotion'
           base: prod
           labels: production-deploy
