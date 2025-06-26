@@ -1,0 +1,62 @@
+name: Build and Deploy to Pre-Production, then Create PR
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run build (includes format check and tests)
+        run: npm run build
+      
+      - name: Deploy to Vercel (Preview/Pre-Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: '--preview'
+      
+      - name: Create Pull Request to prod branch
+        if: success()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Ready for production deployment
+          title: 'Ready for Production: ${{ github.sha }}'
+          body: |
+            ## Ready for Production Deployment
+            
+            This PR was automatically created after successful build and deployment to pre-production.
+            
+            ### Pre-Production URL
+            The changes can be previewed at the Vercel preview URL (available in the Vercel dashboard).
+            
+            ### Changes
+            - Commit: ${{ github.sha }}
+            - Branch: main
+            
+            ### Manual Steps Required
+            1. Review the changes in the pre-production environment
+            2. Run any necessary manual tests
+            3. Approve and merge this PR to deploy to production
+          branch: deploy-to-prod/${{ github.sha }}
+          base: prod
+          labels: production-deploy
