@@ -55,10 +55,6 @@ export const authConfig = {
           return null;
         }
 
-        console.log("Authorize - User from DB:", JSON.stringify(user));
-        console.log("Authorize - User role from DB:", user.role);
-        console.log("Authorize - User role type:", typeof user.role);
-
         const passwordMatch = await compare(
           credentials.password as string,
           user.password,
@@ -69,60 +65,36 @@ export const authConfig = {
         }
 
         const role = UserRoleEnum.safeParse(user.role);
-        console.log("Authorize - Role parse success:", role.success);
 
         if (!role.success) {
           console.error("Invalid user role:", user.role);
           return null;
         }
 
-        console.log("Authorize - Parsed role:", role.data);
-        console.log("Authorize - Parsed role type:", typeof role.data);
-
         // Ensure role is a string for JWT serialization
-        const authUser = {
+        return {
           id: user.id,
           name: user.username,
           email: user.username + "@example.com", // NextAuth requires an email
           role: role.data,
         };
-
-        console.log("Authorize - Returning user:", JSON.stringify(authUser));
-        return authUser;
       },
     }),
   ],
   callbacks: {
     jwt: ({ token, user }) => {
-      console.log(
-        "JWT Callback - User:",
-        user ? JSON.stringify(user) : "No user",
-      );
-      console.log("JWT Callback - Token before:", JSON.stringify(token));
-
       if (user) {
         token.id = user.id;
         token.role = user.role;
-
-        // Ensure role is properly set and serialized
-        console.log("JWT Callback - Setting role:", user.role);
-        console.log("JWT Callback - Role type:", typeof user.role);
       }
 
-      console.log("JWT Callback - Token after:", JSON.stringify(token));
       return token;
     },
     session: ({ session, token }) => {
-      console.log("Session Callback - Token:", JSON.stringify(token));
-      console.log("Session Callback - Token role:", token.role);
-      console.log("Session Callback - Token role type:", typeof token.role);
-
       const role = UserRoleEnum.safeParse(token.role);
-      console.log("Session Callback - Role parse success:", role.success);
 
       if (!role.success) {
         console.error("Invalid role in token:", token.role);
-        console.log("Session Callback - Defaulting to USER role");
         return {
           ...session,
           user: {
@@ -133,7 +105,6 @@ export const authConfig = {
         };
       }
 
-      console.log("Session Callback - Parsed role:", role.data);
       return {
         ...session,
         user: {

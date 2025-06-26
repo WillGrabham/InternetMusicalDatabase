@@ -18,6 +18,9 @@ export const musicalRouter = createTRPCRouter({
   createMusical: adminProcedure
     .input(CreateMusicalSchema)
     .mutation(async ({ ctx, input }) => {
+      console.log(
+        `user: \`${ctx.session.user.id}\` is creating musical: ${input.title}`,
+      );
       return ctx.db.musical.create({
         data: {
           ...input,
@@ -48,6 +51,9 @@ export const musicalRouter = createTRPCRouter({
         });
       }
 
+      console.log(
+        `user: \`${ctx.session.user.id}\` is updating musical: ${musical.title}`,
+      );
       return ctx.db.musical.update({
         where: { id },
         data,
@@ -71,6 +77,9 @@ export const musicalRouter = createTRPCRouter({
         });
       }
 
+      console.log(
+        `user: \`${ctx.session.user.id}\` is deleting musical: ${musical.title}`,
+      );
       return ctx.db.musical.delete({
         where: { id },
       });
