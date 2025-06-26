@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "npm run format:check && next build",
+    "build": "npm run format:check && npm run test && next build",
     "check": "next lint && tsc --noEmit",
     "db:generate": "prisma migrate dev",
     "db:migrate": "prisma migrate deploy",
@@ -19,6 +19,7 @@
     "lint:fix": "next lint --fix",
     "preview": "next build && next start",
     "start": "next start",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -52,7 +53,9 @@
     "prettier-plugin-organize-imports": "4.1.0",
     "prisma": "^6.5.0",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.27.0"
+    "typescript-eslint": "^8.27.0",
+    "vitest": "^3.2.4",
+    "vitest-mock-extended": "^3.1.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.39.3"
