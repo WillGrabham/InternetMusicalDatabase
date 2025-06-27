@@ -1,47 +1,29 @@
-# Create T3 App
+# Internet Musical Database
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## What is this?
 
-## What's next? How do I make an app with this?
+The Internet Musical Database web application is used to store and view musicals online.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Users who sign in to the website are granted the ability to view unreleased musicals, and administrators are granted the ability to create, edit, and delete musicals.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## How do I access this?
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+The URL for this website is available from a system administrator, and the administrator login details are available in the scripts/add-admin.js script.
 
-## Learn More
+## How do I deploy this locally?
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Prerequisites
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+* NPM installed
+* Docker installed
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Steps
 
-## How do I deploy this?
+Start the PostgreSQL database using Docker: `docker compose up -d`
 
-### PostgreSQL for Vercel Deployment
+Set environment variables:
 
-This project uses PostgreSQL as its database, which is compatible with Vercel's serverless architecture.
+* Set the `DATABASE_URL` environment variable to your PostgreSQL connection string
+* Set the `AUTH_SECRET` environment variable to the output of `npx auth secret`
 
-For local development:
-```bash
-# Start the PostgreSQL database using Docker
-docker compose up -d
-
-# Start the development server
-npm run dev
-```
-
-For deployment to Vercel:
-1. Create a PostgreSQL database on Vercel or another provider
-2. Set the `DATABASE_URL` environment variable to your PostgreSQL connection string
-3. Deploy your application
-
-For other deployment options, follow the T3 deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+Start the development server: `npm run dev`
